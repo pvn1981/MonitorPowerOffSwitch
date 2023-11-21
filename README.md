@@ -14,9 +14,9 @@ MonitorPowerOffSwitch.exe -v or MonitorPowerOffSwitch.exe --verbose - print debu
 
 **CTRL+ALT+L** - _power off current monitor_ <br />
 **SHIFT** - _power on current monitor_ <br />
-**CTRL+ALT+1 - _switch current monitor to 1_ <br />
-**CTRL+ALT+2 - _switch current monitor to 2_ <br />
-**CTRL+ALT+3 - _switch current monitor to 3_ <br />
-**CTRL+ALT+4 - _switch current monitor to 4_ <br />
-**WinKey+Z - _switch power on or off monitor on mouse moving_ <br />
+**CTRL+ALT+1** - _switch current monitor to 1_ <br />
+**CTRL+ALT+2** - _switch current monitor to 2_ <br />
+**CTRL+ALT+3** - _switch current monitor to 3_ <br />
+**CTRL+ALT+4** - _switch current monitor to 4_ <br />
+**WinKey+Z** - _switch power on or off monitor on mouse moving_ <br />
 for _exit_ press **CTRL+E** <br />
