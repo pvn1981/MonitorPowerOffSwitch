@@ -9,7 +9,11 @@
 #define KEY_DOWN(key) ((::GetAsyncKeyState(key) & 0x80000) ? 1 : 0)
 #define KEY_UP(key)   ((::GetAsyncKeyState(key) & 0x80000) ? 0 : 1)
 
-const BYTE PowerMode = 0xD6;  // VCP Code defined in VESA Monitor Control Command Set (MCCS) standard
+// VCP Code defined in VESA Monitor Control Command Set (MCCS) standard
+const BYTE PowerMode = 0xD6;  
+// Samsung only
+// const BYTE PowerMode = 0xE1;  
+
 const DWORD PowerOn = 0x01;
 const DWORD PowerOff = 0x04;
 
@@ -53,7 +57,14 @@ void MonitorSwitch(MonitorDesc& monitor, DWORD mode)
 		return;
 	}
 
-	SetVCPFeature(monitor.hdl, PowerMode, mode);
+	bool result = SetVCPFeature(monitor.hdl, PowerMode, mode);
+	std::error_code ec(GetLastError(), std::system_category());
+
+	if (ec)
+	{
+		std::cout << "message: " << ec.message() << std::endl;
+	}
+
 	monitor.power = mode;
 }
 
