@@ -67,15 +67,16 @@ int main(int argc, char* argv[])
 {
 	bool runBackground = true;
 
-	if(argc == 1)
-	{ 
+	if (argc == 1)
+	{
 		runBackground = true;
 
-	} else if (argc == 2) {
+	}
+	else if (argc == 2) {
 		runBackground = false;
 
-		if(std::string(argv[1]) == "--verbose" || std::string(argv[1]) == "-v")
-		{ 
+		if (std::string(argv[1]) == "--verbose" || std::string(argv[1]) == "-v")
+		{
 			runBackground = false;
 		}
 
@@ -84,7 +85,8 @@ int main(int argc, char* argv[])
 			HelpMessage();
 			return 0;
 		}
-	} else	{
+	}
+	else {
 		HelpMessage();
 	}
 
@@ -149,7 +151,7 @@ int main(int argc, char* argv[])
 		{
 			// turn on
 			MonitorSwitch(targetMonitor, PowerOn);
-			
+
 			if (KEY_DOWN(VK_CONTROL))
 			{
 				return 0;
