@@ -9,8 +9,8 @@ https://stackoverflow.com/questions/71030204/how-to-turn-on-display-with-mouse-m
 - Change power off on SHIFT key
 - Added choice of one of two monitors
 
-MonitorPowerOffSwitch.exe - run background
-MonitorPowerOffSwitch.exe -v or MonitorPowerOffSwitch.exe --verbose - print debug message
+MonitorPowerOffSwitch.exe - run background <br />
+MonitorPowerOffSwitch.exe -v or MonitorPowerOffSwitch.exe --verbose - print debug message <br />
 
 **CTRL+ALT+L** - _power off current monitor_ <br />
 **SHIFT** - _power on current monitor_ <br />
