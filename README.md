@@ -8,3 +8,15 @@ https://stackoverflow.com/questions/71030204/how-to-turn-on-display-with-mouse-m
 
 - Change power off on SHIFT key
 - Added choice of one of two monitors
+
+MonitorPowerOffSwitch.exe - run background
+MonitorPowerOffSwitch.exe -v or MonitorPowerOffSwitch.exe --verbose - print debug message
+
+CTRL+ALT+L - power off current monitor
+SHIFT - power on current monitor
+CTRL+ALT+1 - switch current monitor to 1
+CTRL+ALT+2 - switch current monitor to 2
+CTRL+ALT+3 - switch current monitor to 3
+CTRL+ALT+4 - switch current monitor to 4
+WinKey+Z - switch power on or off monitor on mouse moving
+for exit press CTRL+E" << std::endl;
