@@ -61,6 +61,15 @@ void HelpMessage()
 {
 	std::cout << "MonitorPowerOffSwitch.exe - run background" << std::endl;
 	std::cout << "MonitorPowerOffSwitch.exe -v or MonitorPowerOffSwitch.exe --verbose - print debug message" << std::endl;
+
+	std::cout << "CTRL+ALT+L - power off current monitor" << std::endl;
+	std::cout << "SHIFT - power on current monitor" << std::endl;
+	std::cout << "CTRL+ALT+1 - switch current monitor to 1" << std::endl;
+	std::cout << "CTRL+ALT+2 - switch current monitor to 2" << std::endl;
+	std::cout << "CTRL+ALT+3 - switch current monitor to 3" << std::endl;
+	std::cout << "CTRL+ALT+4 - switch current monitor to 4" << std::endl;
+	std::cout << "WinKey+Z - switch power on or off monitor on mouse moving" << std::endl;
+	std::cout << "for exit press CTRL+E" << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -70,11 +79,8 @@ int main(int argc, char* argv[])
 	if (argc == 1)
 	{
 		runBackground = true;
-
 	}
 	else if (argc == 2) {
-		runBackground = false;
-
 		if (std::string(argv[1]) == "--verbose" || std::string(argv[1]) == "-v")
 		{
 			runBackground = false;
@@ -82,6 +88,7 @@ int main(int argc, char* argv[])
 
 		if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")
 		{
+			runBackground = false;
 			HelpMessage();
 			return 0;
 		}
@@ -113,19 +120,65 @@ int main(int argc, char* argv[])
 		monitor.power = PowerOn;
 	}
 
+	int currentMonitorID = 0; //need start this exe in monitors[0] 
 	// Here select the first one monitor as example
-	MonitorDesc targetMonitor = monitors[0];
+	MonitorDesc targetMonitor = monitors[currentMonitorID];
 	bool targetMonitorChange = true;
 
-	if (!runBackground)
-	{
-		std::cout << "for exit press CTRL+ALT+L power off current monitor" << std::endl;
-		std::cout << "for exit press CTRL+SHIFT - power on current monitor" << std::endl;
-		std::cout << "for exit press CTRL+E" << std::endl;
-	}
+	//Mouse position
+	LONG zx = -1;
+	LONG zy = -1;
+	POINT ptB = { 0, 0 };
+
+	bool debug_mouse_pos = false;
 
 	while (1)
 	{
+		/*---------------------------------------------------------------*/
+		/*-                          -                                  -*/
+		/*-                          -                                  -*/
+		/*-                          -                                  -*/
+		/*-     monitors[0]          -             monitors[1]          -*/
+		/*-                          -                                  -*/
+		/*-                          -                                  -*/
+		/*-                          -                                  -*/
+		/*---------------------------------------------------------------*/
+		/*                       {1919,1079}                             */
+
+		LPPOINT xy = &ptB;   //Location variables
+		GetCursorPos(xy);    //Gets the current mouse position        
+
+		if (debug_mouse_pos)
+		{
+			//If the mouse moves, (i.e. the current coordinates change to print out the coordinates) print out the coordinates.
+			if ((zx != xy->x) || (zy != xy->y))
+			{
+				//Here you need to test the edge of your monitor[0]
+				//After Test, delete this and Hide the console by ShowWindow(hWnd, 0)
+				printf("x=%d, y=%d\n", xy->x, xy->y);
+			}
+		}
+
+		if (::GetAsyncKeyState('Z') == -32767)
+		{
+			if (KEY_DOWN(VK_LWIN))
+			{
+				//The coordinate in the lower right corner of my monitor is {1919,1079}
+				if (xy->x > 1919 && currentMonitorID == 0)
+				{
+					currentMonitorID = 1;
+					MonitorSwitch(monitors[1], PowerOn);
+					MonitorSwitch(monitors[0], PowerOff);
+				}
+				else if (xy->x <= 1919 && currentMonitorID == 1)
+				{
+					currentMonitorID = 0;
+					MonitorSwitch(monitors[0], PowerOn);
+					MonitorSwitch(monitors[1], PowerOff);
+				}
+			}
+		}
+
 		if (::GetAsyncKeyState('L') == -32767)
 		{
 			if (KEY_DOWN(VK_CONTROL) && KEY_DOWN(VK_MENU))
@@ -164,7 +217,8 @@ int main(int argc, char* argv[])
 			{
 				if (monitors.size() > 0)
 				{
-					targetMonitor = monitors[0];
+					currentMonitorID = 0;
+					targetMonitor = monitors[currentMonitorID];
 					targetMonitorChange = true;
 				}
 			}
@@ -176,7 +230,8 @@ int main(int argc, char* argv[])
 			{
 				if (monitors.size() > 1)
 				{
-					targetMonitor = monitors[1];
+					currentMonitorID = 1;
+					targetMonitor = monitors[currentMonitorID];
 					targetMonitorChange = true;
 				}
 			}
@@ -188,7 +243,8 @@ int main(int argc, char* argv[])
 			{
 				if (monitors.size() > 2)
 				{
-					targetMonitor = monitors[2];
+					currentMonitorID = 2;
+					targetMonitor = monitors[currentMonitorID];
 					targetMonitorChange = true;
 				}
 			}
@@ -200,7 +256,8 @@ int main(int argc, char* argv[])
 			{
 				if (monitors.size() > 3)
 				{
-					targetMonitor = monitors[3];
+					currentMonitorID = 3;
+					targetMonitor = monitors[currentMonitorID];
 					targetMonitorChange = true;
 				}
 			}
@@ -209,6 +266,7 @@ int main(int argc, char* argv[])
 		if (targetMonitorChange)
 		{
 			std::cout << "targetMonitor.hdl: " << targetMonitor.hdl << std::endl;
+			std::cout << "currentMonitorID: " << currentMonitorID << std::endl;
 			targetMonitorChange = false;
 		}
 
