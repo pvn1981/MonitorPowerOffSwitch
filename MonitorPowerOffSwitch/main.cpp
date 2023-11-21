@@ -57,16 +57,53 @@ void MonitorSwitch(MonitorDesc& monitor, DWORD mode)
 	monitor.power = mode;
 }
 
-int main()
+void HelpMessage()
 {
-	// Скрытие консоли 
-	HWND hWnd;
-	AllocConsole();
-	hWnd = FindWindowA("ConsoleWindowClass", NULL);
-	ShowWindow(hWnd, 0);
+	std::cout << "MonitorPowerOffSwitch.exe - run background" << std::endl;
+	std::cout << "MonitorPowerOffSwitch.exe -v or MonitorPowerOffSwitch.exe --verbose - print debug message" << std::endl;
+}
+
+int main(int argc, char* argv[])
+{
+	bool runBackground = true;
+
+	if(argc == 1)
+	{ 
+		runBackground = true;
+
+	} else if (argc == 2) {
+		runBackground = false;
+
+		if(std::string(argv[1]) == "--verbose" || std::string(argv[1]) == "-v")
+		{ 
+			runBackground = false;
+		}
+
+		if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")
+		{
+			HelpMessage();
+			return 0;
+		}
+	} else	{
+		HelpMessage();
+	}
+
+	if (runBackground)
+	{
+		// Hiding the console
+		HWND hWnd;
+		AllocConsole();
+		hWnd = FindWindowA("ConsoleWindowClass", NULL);
+		ShowWindow(hWnd, 0);
+	}
 
 	std::vector<MonitorDesc> monitors;
 	EnumDisplayMonitors(NULL, NULL, &MonitorEnumProc, reinterpret_cast<LPARAM>(&monitors));
+
+	if (!runBackground)
+	{
+		std::cout << "monitors count: " << monitors.size() << std::endl;
+	}
 
 	// Init
 	for (auto& monitor : monitors)
@@ -76,6 +113,14 @@ int main()
 
 	// Here select the first one monitor as example
 	MonitorDesc targetMonitor = monitors[0];
+	bool targetMonitorChange = true;
+
+	if (!runBackground)
+	{
+		std::cout << "for exit press CTRL+ALT+L power off current monitor" << std::endl;
+		std::cout << "for exit press CTRL+SHIFT - power on current monitor" << std::endl;
+		std::cout << "for exit press CTRL+E" << std::endl;
+	}
 
 	while (1)
 	{
@@ -118,6 +163,7 @@ int main()
 				if (monitors.size() > 0)
 				{
 					targetMonitor = monitors[0];
+					targetMonitorChange = true;
 				}
 			}
 		}
@@ -129,8 +175,39 @@ int main()
 				if (monitors.size() > 1)
 				{
 					targetMonitor = monitors[1];
+					targetMonitorChange = true;
 				}
 			}
+		}
+
+		if (::GetAsyncKeyState('3') == -32767)
+		{
+			if (KEY_DOWN(VK_CONTROL) && KEY_DOWN(VK_MENU))
+			{
+				if (monitors.size() > 2)
+				{
+					targetMonitor = monitors[2];
+					targetMonitorChange = true;
+				}
+			}
+		}
+
+		if (::GetAsyncKeyState('4') == -32767)
+		{
+			if (KEY_DOWN(VK_CONTROL) && KEY_DOWN(VK_MENU))
+			{
+				if (monitors.size() > 3)
+				{
+					targetMonitor = monitors[3];
+					targetMonitorChange = true;
+				}
+			}
+		}
+
+		if (targetMonitorChange)
+		{
+			std::cout << "targetMonitor.hdl: " << targetMonitor.hdl << std::endl;
+			targetMonitorChange = false;
 		}
 
 		// bug fix for 100% CPU load
