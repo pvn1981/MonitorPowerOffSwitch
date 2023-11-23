@@ -202,6 +202,24 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		if (::GetAsyncKeyState('Q') == -32767)
+		{
+			if (KEY_DOWN(VK_CONTROL) && KEY_DOWN(VK_MENU))
+			{
+				printf("*** Turning OFF Monitor(s) ***\n\n");
+				::PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);
+			}
+		}
+
+		if (::GetAsyncKeyState('W') == -32767)
+		{
+			if (KEY_DOWN(VK_CONTROL) && KEY_DOWN(VK_MENU))
+			{
+				printf("*** Turning ON Monitor(s) ***\n\n");
+				::PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)-1);
+			}
+		}
+
 		if (::GetAsyncKeyState(VK_SHIFT) == -32767)
 		{
 			if (KEY_DOWN(VK_SHIFT))
