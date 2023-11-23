@@ -87,6 +87,66 @@ void HelpMessage()
 	std::cout << "for exit press CTRL+E" << std::endl;
 }
 
+void QueryDisplay()
+{
+	std::vector<DISPLAYCONFIG_PATH_INFO> paths;
+	std::vector<DISPLAYCONFIG_MODE_INFO> modes;
+	UINT32 flags = QDC_ONLY_ACTIVE_PATHS;
+	LONG isError = ERROR_INSUFFICIENT_BUFFER;
+
+	UINT32 pathCount, modeCount;
+	isError = GetDisplayConfigBufferSizes(flags, &pathCount, &modeCount);
+
+	if (isError)
+	{
+		return;
+	}
+
+	// Allocate the path and mode arrays
+	paths.resize(pathCount);
+	modes.resize(modeCount);
+
+	// Get all active paths and their modes
+	isError = QueryDisplayConfig(flags, &pathCount, paths.data(), &modeCount, modes.data(), nullptr);
+
+	// The function may have returned fewer paths/modes than estimated
+	paths.resize(pathCount);
+	modes.resize(modeCount);
+
+
+	if (isError)
+	{
+		return;
+	}
+
+	// For each active path
+	size_t len = paths.size();
+	for (int i = 0; i < len; i++)
+	{
+		// Find the target (monitor) friendly name
+		DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
+		targetName.header.adapterId = paths[i].targetInfo.adapterId;
+		targetName.header.id = paths[i].targetInfo.id;
+		targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+		targetName.header.size = sizeof(targetName);
+		isError = DisplayConfigGetDeviceInfo(&targetName.header);
+
+		if (isError)
+		{
+			return;
+		}
+
+		std::wstring mon_name;
+		if (targetName.flags.friendlyNameFromEdid)
+		{
+			mon_name = std::wstring(
+				targetName.monitorFriendlyDeviceName);
+		}
+
+		std::wcout << "Monitor " << mon_name << std::endl;
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	bool runBackground = true;
@@ -146,6 +206,8 @@ int main(int argc, char* argv[])
 	POINT ptB = { 0, 0 };
 
 	bool debug_mouse_pos = false;
+
+	QueryDisplay();
 
 	while (1)
 	{
