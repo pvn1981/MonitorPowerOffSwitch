@@ -144,6 +144,7 @@ void QueryDisplay()
 		}
 
 		std::wcout << "Monitor " << mon_name << std::endl;
+		printf("edidManufactureId: %x\n", targetName.edidManufactureId);
 	}
 }
 
