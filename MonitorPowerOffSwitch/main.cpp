@@ -75,6 +75,10 @@ void HelpMessage()
 
 	std::cout << "CTRL+ALT+L - power off current monitor" << std::endl;
 	std::cout << "SHIFT - power on current monitor" << std::endl;
+
+	std::cout << "CTRL+ALT+Q - power off all monitors" << std::endl;
+	std::cout << "CTRL+ALT+W - power on all monitor" << std::endl;
+
 	std::cout << "CTRL+ALT+1 - switch current monitor to 1" << std::endl;
 	std::cout << "CTRL+ALT+2 - switch current monitor to 2" << std::endl;
 	std::cout << "CTRL+ALT+3 - switch current monitor to 3" << std::endl;
