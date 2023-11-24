@@ -2,7 +2,9 @@
 #include <windows.h>
 #include <vector>
 #include <lowlevelmonitorconfigurationapi.h>
+
 #include <windowsx.h>
+#include <VersionHelpers.h>
 
 #pragma comment(lib, "Dxva2.lib")
 
@@ -87,67 +89,6 @@ void HelpMessage()
 	std::cout << "for exit press CTRL+E" << std::endl;
 }
 
-void QueryDisplay()
-{
-	std::vector<DISPLAYCONFIG_PATH_INFO> paths;
-	std::vector<DISPLAYCONFIG_MODE_INFO> modes;
-	UINT32 flags = QDC_ONLY_ACTIVE_PATHS;
-	LONG isError = ERROR_INSUFFICIENT_BUFFER;
-
-	UINT32 pathCount, modeCount;
-	isError = GetDisplayConfigBufferSizes(flags, &pathCount, &modeCount);
-
-	if (isError)
-	{
-		return;
-	}
-
-	// Allocate the path and mode arrays
-	paths.resize(pathCount);
-	modes.resize(modeCount);
-
-	// Get all active paths and their modes
-	isError = QueryDisplayConfig(flags, &pathCount, paths.data(), &modeCount, modes.data(), nullptr);
-
-	// The function may have returned fewer paths/modes than estimated
-	paths.resize(pathCount);
-	modes.resize(modeCount);
-
-
-	if (isError)
-	{
-		return;
-	}
-
-	// For each active path
-	size_t len = paths.size();
-	for (int i = 0; i < len; i++)
-	{
-		// Find the target (monitor) friendly name
-		DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
-		targetName.header.adapterId = paths[i].targetInfo.adapterId;
-		targetName.header.id = paths[i].targetInfo.id;
-		targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
-		targetName.header.size = sizeof(targetName);
-		isError = DisplayConfigGetDeviceInfo(&targetName.header);
-
-		if (isError)
-		{
-			return;
-		}
-
-		std::wstring mon_name;
-		if (targetName.flags.friendlyNameFromEdid)
-		{
-			mon_name = std::wstring(
-				targetName.monitorFriendlyDeviceName);
-		}
-
-		std::wcout << "Monitor " << mon_name << std::endl;
-		printf("edidManufactureId: %x\n", targetName.edidManufactureId);
-	}
-}
-
 int main(int argc, char* argv[])
 {
 	bool runBackground = true;
@@ -171,6 +112,12 @@ int main(int argc, char* argv[])
 	}
 	else {
 		HelpMessage();
+	}
+
+	if (IsWindows10OrGreater())
+	{
+		std::cout << "For work programme need windows 10 or greater " << std::endl;
+		return 0;
 	}
 
 	if (runBackground)
@@ -207,8 +154,6 @@ int main(int argc, char* argv[])
 	POINT ptB = { 0, 0 };
 
 	bool debug_mouse_pos = false;
-
-	QueryDisplay();
 
 	while (1)
 	{
@@ -356,6 +301,28 @@ int main(int argc, char* argv[])
 					targetMonitor = monitors[currentMonitorID];
 					targetMonitorChange = true;
 				}
+			}
+		}
+
+
+		if (::GetAsyncKeyState('S') == -32767)
+		{
+			if (KEY_DOWN(VK_CONTROL) && KEY_DOWN(VK_MENU))
+			{
+
+				GetPhysicalMonitorsFromHMONITOR
+				HANDLE hdl= CreateFile(L"\\\\.\\DISPLAY1", 0, 0, NULL, OPEN_EXISTING, 0, 0);
+
+				int state = -1;
+				GetDevicePowerState(hdl, &state);
+				std::error_code ec(GetLastError(), std::system_category());
+
+				if (ec)
+				{
+					std::cout << "message: " << ec.message() << std::endl;
+				}
+
+				printf("state: %d\n", state);
 			}
 		}
 
