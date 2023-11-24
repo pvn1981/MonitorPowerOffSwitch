@@ -6,6 +6,7 @@ https://ru.stackoverflow.com/questions/1378379/%d0%9a%d0%b0%d0%ba-%d0%b2%d1%8b%d
 
 https://stackoverflow.com/questions/71030204/how-to-turn-on-display-with-mouse-move-but-not-with-vk-space
 
+SendMessage switch monitor off:
 https://firststeps.ru/mfc/winapi/r.php?40
 
 - Change power off on SHIFT key
